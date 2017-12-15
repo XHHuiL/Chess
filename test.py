@@ -2,7 +2,6 @@
 # created by liu hui
 import chess
 import datetime
-import agent_acx2
 
 # 全局变量，用于存储已经走过的着法，最多存储8步
 pre_moves = []
@@ -188,7 +187,7 @@ def ai_interface_1(fen):
 
 # AI玩家的2号接口
 def ai_interface_2(fen):
-    return agent_acx2.respond_to(fen)
+    return player_interface(fen)
 
 
 # chess ai 接口
@@ -358,7 +357,7 @@ def main():
                 print board
                 start = datetime.datetime.now()
                 import agent
-                mov = chess.Move.from_uci(black(board.fen(), agent.respond_to))
+                mov = chess.Move.from_uci(black(board.fen(), ai_interface_1))
                 end = datetime.datetime.now()
                 print "%fs" % (end - start).total_seconds()
                 moves = ""
