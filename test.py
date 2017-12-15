@@ -332,6 +332,7 @@ def main():
         while not board.is_game_over():
             count += 1
             print count
+            
             # 白方先手
             if is_white:
                 print "turn to white"
