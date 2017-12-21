@@ -6,6 +6,10 @@ import datetime
 # 全局变量，用于存储已经走过的着法，最多存储8步
 pre_moves = []
 
+max_time = 2.6
+
+abs_max_weight = 666666
+
 
 # 存储权重的数组 white
 weights_white = [100, 100, 100, 100, 100, 100, 100, 100,
@@ -153,7 +157,7 @@ def ai_alpha_beta(fen, is_white, depth, alpha, beta, start, sorted_moves):
                 sorted_moves.append(mov)
             else:
                 sorted_moves.insert(0, mov)
-            if (datetime.datetime.now() - start).total_seconds() >= 4.5:
+            if (datetime.datetime.now() - start).total_seconds() >= max_time:
                 return best_mov, sorted_moves, beta
         cal_weight = beta
 
@@ -170,7 +174,7 @@ def ai_alpha_beta(fen, is_white, depth, alpha, beta, start, sorted_moves):
             else:
                 sorted_moves.insert(0, mov)
                 # beta解肢
-            if (datetime.datetime.now() - start).total_seconds() >= 4.5:
+            if (datetime.datetime.now() - start).total_seconds() >= max_time:
                 return best_mov, sorted_moves, alpha
         cal_weight = alpha
 
@@ -205,7 +209,7 @@ def ai_alpha_beta_au(fen, is_white, depth, alpha, beta, start):
                     # alpha解肢
                     if beta <= alpha:
                         break
-                if (datetime.datetime.now() - start).total_seconds() >= 4.5:
+                if (datetime.datetime.now() - start).total_seconds() >= max_time:
                     break
             return beta
 
@@ -220,7 +224,7 @@ def ai_alpha_beta_au(fen, is_white, depth, alpha, beta, start):
                     # beta解肢
                     if beta <= alpha:
                         break
-                if (datetime.datetime.now() - start).total_seconds() >= 4.5:
+                if (datetime.datetime.now() - start).total_seconds() >= max_time:
                     break
             return alpha
 
@@ -241,15 +245,13 @@ def ai_alpha_beta_au(fen, is_white, depth, alpha, beta, start):
     # 游戏结束
     else:
         if is_white:
-            return 666666
+            return abs_max_weight
         else:
-            return -666666
+            return -abs_max_weight
 
 
 def respond_to(fen):
-    is_white = True
-    if fen.split()[1] == 'b':
-        is_white = False
+    is_white = chess.Board(fen).turn
 
     mov = {}
     cal_mov = {}
@@ -262,19 +264,19 @@ def respond_to(fen):
     sorted_moves = []
     weight = 0
 
-    while cost < 4.5:
+    while cost < max_time:
         # 只有在规定时间3s内一层完全计算完，才更新相应的uci
         # 如果一层没有计算完全便更新相应的uci则会有bug，ai便会很傻
         mov = cal_mov
         if depth <= 4:
             cal_mov, sorted_moves, weight = \
-                ai_alpha_beta(fen, is_white, depth, -66666, 66666, start, sorted_moves)
+                ai_alpha_beta(fen, is_white, depth, -abs_max_weight, abs_max_weight, start, sorted_moves)
         else:
             cal_mov, sorted_moves, weight = \
                 ai_alpha_beta(fen, is_white, depth, weight - 25, weight + 25, start, sorted_moves)
         cost = (datetime.datetime.now() - start).total_seconds()
         print cost
-        if cost < 4.5:
+        if cost < max_time:
             print "total compute depth %d" % depth
         depth += 1
 
